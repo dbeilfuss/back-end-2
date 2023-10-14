@@ -1,4 +1,5 @@
 /// Variables ///
+const { json } = require("express");
 const db = require("./db.json");
 let id = 4;
 
@@ -6,9 +7,12 @@ let id = 4;
 const getHouses = (req, res) => {
   res.status(200).send(db);
   console.log(`hit getHouses`);
+  //   console.log(JSON.stringify(db));
 };
 
 const deleteHouse = (req, res) => {
+  const { id } = req.params;
+  console.log(id);
   //   for (let i = 0; i < db.length; i++) {
   //     if (db[i].id === +req) {
   //       db.splice(i, 1);
@@ -17,21 +21,31 @@ const deleteHouse = (req, res) => {
   //       return;
   //     }
 
-  const i = db.findIndex((house) => house.id === req);
-  if (i > 0) {
-    db.splice(db[i]);
-    console.log(`house id:${req} deleted`);
+  const i = db.findIndex((house) => house.id === +id);
+  console.log(i);
+  if (i >= 0) {
+    db.splice(i, 1);
+    res.status(200).send(db);
+    console.log(`house id:${id} deleted`);
     return;
   }
   res.status(404).send("house not found");
-  console.log(`house id:${req} requested deletion failed: house not found`);
+  console.log(`house id:${id} requested deletion failed: house not found`);
 };
 
 const createHouse = (req, res) => {
-  const { id, address, price, imageURL } = req;
-  db.push(req);
-  res.status(200).send("house added");
-  console.log(`house created: ${req}`);
+  const { address, price, imageURL } = req.body;
+
+  const house = {
+    id: id,
+    address: address,
+    price: price,
+    imageURL: imageURL,
+  };
+  db.push(house);
+  res.status(200).send(db);
+  console.log(`house added: ${JSON.stringify(db[id - 1], null, 2)})`);
+  id++;
 };
 
 const updateHouse = (req, res) => {};
