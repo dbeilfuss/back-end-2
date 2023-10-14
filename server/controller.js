@@ -13,16 +13,8 @@ const getHouses = (req, res) => {
 const deleteHouse = (req, res) => {
   const { id } = req.params;
   console.log(id);
-  //   for (let i = 0; i < db.length; i++) {
-  //     if (db[i].id === +req) {
-  //       db.splice(i, 1);
-  //       res.status(200).send("house deleted");
-  //       console.log(`house id:${req} deleted`);
-  //       return;
-  //     }
 
   const i = db.findIndex((house) => house.id === +id);
-  console.log(i);
   if (i >= 0) {
     db.splice(i, 1);
     res.status(200).send(db);
@@ -42,13 +34,34 @@ const createHouse = (req, res) => {
     price: price,
     imageURL: imageURL,
   };
+
   db.push(house);
   res.status(200).send(db);
   console.log(`house added: ${JSON.stringify(db[id - 1], null, 2)})`);
   id++;
 };
 
-const updateHouse = (req, res) => {};
+const updateHouse = (req, res) => {
+  const { id } = req.params;
+  const { type } = req.body;
+  const i = db.findIndex((house) => house.id == +id);
+  let price = +db[i].price;
+
+  switch (type) {
+    case "plus":
+      price += 10000;
+      db[i].price = price;
+      res.status(200).send(db);
+      break;
+    case "minus":
+      price -= 10000;
+      db[i].price = price;
+      res.status(200).send(db);
+      break;
+    default:
+      res.status(404);
+  }
+};
 
 module.exports = {
   getHouses,
